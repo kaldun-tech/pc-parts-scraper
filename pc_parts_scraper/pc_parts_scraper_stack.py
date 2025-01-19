@@ -34,6 +34,7 @@ class PcPartsScraperStack(Stack):
             directory="./lambda",
             file="Dockerfile"
         )
+        # Lambda function
         stock_notifier_lambda = _lambda.DockerImageFunction(
             self,
             "StockNotifierLambda",
@@ -45,4 +46,19 @@ class PcPartsScraperStack(Stack):
                 repository=stock_notifier_docker_image.repository,
                 tag_or_digest=stock_notifier_docker_image.image_tag,
             )
+        )
+        # Stock DynamoDB table
+        stock_dynamo_table = _dynamodb.Table(
+            self,
+            "StockTable",
+            table_name="StockTable",
+            partition_key=_dynamodb.Attribute(
+                name="PartId",
+                type=_dynamodb.AttributeType.STRING
+            ),
+            sort_key=_dynamodb.Attribute(
+                name="StoreId",
+                type=_dynamodb.AttributeType.STRING
+            ),
+            billing_mode=_dynamodb.BillingMode.PAY_PER_REQUEST
         )
