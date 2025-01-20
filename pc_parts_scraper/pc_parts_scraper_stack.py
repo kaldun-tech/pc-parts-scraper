@@ -4,6 +4,7 @@ from aws_cdk import (
     aws_lambda as _lambda,
     aws_dynamodb as _dynamodb,
     aws_events as events,
+    aws_events_targets as targets,
     Duration,
 )
 from constructs import Construct
@@ -75,3 +76,12 @@ class PcPartsScraperStack(Stack):
                 year="*"
             )
         )
+        # Connects Lambda to CloudWatch event
+        stock_notifier_function = targets.LambdaFunction(stock_notifier_lambda)
+        one_minute_event_rule.add_target(stock_notifier_function)
+        # Give Lambda the permissions to read off Parameter Store
+        string_param.grant_read(stock_notifier_lambda)
+        # Give Lambda the permissions to read and write to DynamoDB
+        stock_dynamo_table.grant_read_write_data(stock_notifier_lambda)
+        # Give Lambda the permissions to pull images from ECR
+        stock_notifier_docker_image.repository.grant_pull(stock_notifier_lambda)
