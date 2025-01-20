@@ -3,6 +3,7 @@ from aws_cdk import (
     aws_ssm as ssm,
     aws_lambda as _lambda,
     aws_dynamodb as _dynamodb,
+    aws_events as events,
     Duration,
 )
 from constructs import Construct
@@ -61,4 +62,16 @@ class PcPartsScraperStack(Stack):
                 type=_dynamodb.AttributeType.STRING
             ),
             billing_mode=_dynamodb.BillingMode.PAY_PER_REQUEST
+        )
+        # CloudWatch event each minute
+        one_minute_event_rule = events.Rule(
+            self,
+            "MinuteRule",
+            schedule=events.Schedule.cron(
+                minute="0", # TODO - Change to *
+                hour="0", # TODO - Change to *
+                month="*",
+                day="*",
+                year="*"
+            )
         )
