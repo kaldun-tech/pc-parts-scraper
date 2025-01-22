@@ -1,7 +1,7 @@
 from product_resolvers.cc_resolver import CanadaComputersResolver
 import os
 from dotenv import load_dotenv
-from aws_accessors import ssm_accessor
+from aws_accessors import ssm_accessor, dynamodb_accessor
 from discord import discord_publisher
 
 # Load environment variables from .env file
@@ -21,15 +21,16 @@ def handle(event, context):
     product = resolver.resolve()
     print(product)
 
-    # Send notification to Discord
-    # Read the parameter from Parameter Store
+    # Retrieve webhook from Parameter Store
     discord_webhook_url_arn = os.getenv('DISCORD_WEBHOOK_URL_ARN')
-    print(f"Retrieved ARN from env: {discord_webhook_url_arn}")
-    # Read off the parameter value to retrieve webhook
     discord_webhook_url = ssm_accessor.retrieve_parameter(discord_webhook_url_arn)
-    print(f"Retrieved webhook URL: {discord_webhook_url}")
+
     # Publish to Discord
     discord_publisher.publish(discord_webhook_url, product)
+
+    # Save the results to DynamoDB
+    dynamodb_accessor.put_item(product)
+
     print("Published to Discord")
 
 handle(None, None)
