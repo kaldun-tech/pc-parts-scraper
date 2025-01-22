@@ -3,6 +3,7 @@ import os
 from dotenv import load_dotenv
 from aws_accessors import ssm_accessor, dynamodb_accessor
 from discord import discord_publisher
+from models.store import Store, Product
 
 # Load environment variables from .env file
 load_dotenv()
@@ -30,6 +31,10 @@ def handle(event, context):
 
     # Save the results to DynamoDB
     dynamodb_accessor.put_item(product)
+
+    # Get product item from DynamoDB
+    item = dynamodb_accessor.query_item(PRODUCT_ID, Store.CANADA_COMPUTERS.name)
+    print(item)
 
     print("Published to Discord")
 
