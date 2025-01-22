@@ -16,7 +16,7 @@ class CanadaComputersResolver:
                 browser = p.chromium.launch(
                     args=["--disable-gpu", "--single-process"], headless=True)
                 page = browser.new_page()
-                page.set_default_timeout(15000)  # Increase timeout to 15 seconds
+                page.set_default_timeout(10000)
 
                 # Go to URL and wait for network to be idle
                 page.goto(self.product_url, wait_until='networkidle')

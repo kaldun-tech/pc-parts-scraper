@@ -3,45 +3,43 @@ from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from models.product import Product
 from typing import Optional
-import os
+from .aws_session import AWSSession, handle_aws_error
 
-# Get profile from environment variable or use default
-aws_profile = os.getenv('AWS_PROFILE', 'default')
-print(f"Using AWS profile: {aws_profile}")
-
+# Constants
 DYNAMODB_TABLE_NAME = 'StockTable'
-table = boto3.resource('dynamodb', region_name='us-east-1', profile_name=aws_profile).Table(DYNAMODB_TABLE_NAME)
 
+# Initialize DynamoDB
+dynamodb = AWSSession.get_resource('dynamodb')
+table = dynamodb.Table(DYNAMODB_TABLE_NAME)
+
+@handle_aws_error('DynamoDB query')
 def query_item(part_id: str, store_id: str) -> Optional[Product]:
     print(f"Querying DynamoDB for part_id: {part_id} and store_id: {store_id}")
-    try:
-        response = table.query(
-            KeyConditionExpression=Key('PartId').eq(part_id) & Key('StoreId').eq(store_id)
-        )
-        items = response['Items']
-        if "Items" in response and response['Items'] is not None:
-            print(f"Found {len(response['Items'])} items in DynamoDB")
-            return product_from_dict(response['Items'][0])
-        else:
-            print("No items found in DynamoDB for part_id and store_id")
-            return None
-    except ClientError as e:
-        print(f"ClientError: {e.response['Error']['Message']}")
-        raise e
-    except Exception as e:
-        print(f"Unexpected Exception: {str(e)}")
-        raise e
+    response = table.query(
+        KeyConditionExpression=Key('PartId').eq(part_id) & Key('StoreId').eq(store_id)
+    )
+    items = response['Items']
+    if items is not None:
+        print("Found item in DynamoDB")
+        return product_from_dict(items[0])
+    else:
+        print("No items found in DynamoDB for part_id and store_id")
+        return None
 
-def put_item(item: Product) -> None:
-    print(f"Putting item into DynamoDB: {item}")
-    try:
-        table.put_item(Item=product_to_dict(item))
-    except ClientError as e:
-        print(f"ClientError: {e.response['Error']['Message']}")
-        raise e
-    except Exception as e:
-        print(f"Unexpected Exception: {str(e)}")
-        raise e
+@handle_aws_error('DynamoDB put')
+def put_item(product: Product) -> None:
+    print(f"Putting item in DynamoDB: {product.id}")
+    table.put_item(
+        Item={
+            'PartId': product.id,
+            'StoreId': product.store.name,
+            'Name': product.name,
+            'Price': product.price,
+            'Url': product.url,
+            'InStock': product.in_stock
+        }
+    )
+    print("Successfully put item in DynamoDB")
 
 def product_to_dict(product: Product) -> dict:
     return {
