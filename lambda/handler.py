@@ -41,7 +41,7 @@ def handle(event, context):
     previous = dynamodb_accessor.query_item(PRODUCT_ID, Store.CANADA_COMPUTERS.name)
 
     if previous is None:
-        print("First run - saving to DynamoDB")
+        print("First run for this product- save to DynamoDB")
         dynamodb_accessor.put_item(product)
         # Only publish if product is in stock
         if product.in_stock:
