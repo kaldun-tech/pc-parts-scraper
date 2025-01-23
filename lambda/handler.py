@@ -1,10 +1,12 @@
-from product_resolvers.cc_resolver import CanadaComputersResolver
 import os
+
 from dotenv import load_dotenv
-from aws_accessors import ssm_accessor, dynamodb_accessor
-from discord import discord_publisher
-from models.store import Store
+
+from aws_accessors import dynamodb_accessor, ssm_accessor
+from discord.discord_publisher import publish as discord_publish
 from models.product import Product
+from models.store import Store
+from product_resolvers.cc_resolver import CanadaComputersResolver
 
 # Load environment variables from .env file
 load_dotenv()
@@ -31,7 +33,7 @@ def publish_to_discord(product: Product) -> None:
     # Retrieve webhook from Parameter Store
     discord_webhook_url_arn = os.getenv('DISCORD_WEBHOOK_URL_ARN')
     discord_webhook_url = ssm_accessor.retrieve_parameter(discord_webhook_url_arn)
-    discord_publisher.publish(discord_webhook_url, product)
+    discord_publish(discord_webhook_url, product)
 
 def handle(event, context):
     """
@@ -66,5 +68,3 @@ def handle(event, context):
             print("Case 6: Product was previously out of stock. Save to DB and publish to Discord")
             dynamodb_accessor.put_item(product)
             publish_to_discord(product)
-
-handle(None, None)
