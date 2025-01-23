@@ -67,10 +67,10 @@ class PcPartsScraperStack(Stack):
         # CloudWatch event each minute
         one_minute_event_rule = events.Rule(
             self,
-            "MinuteRule",
+            "HourlyRule",
             schedule=events.Schedule.cron(
-                minute="0", # TODO - Change to *
-                hour="0", # TODO - Change to *
+                minute="0",
+                hour="*",
                 month="*",
                 day="*",
                 year="*"
