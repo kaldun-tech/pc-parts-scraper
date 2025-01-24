@@ -34,13 +34,19 @@ playwright install  # Install browser binaries for web scraping
 # Discord webhook URL for notifications
 DISCORD_WEBHOOK_URL=your_discord_webhook_url
 
-# AWS credentials (if not using AWS CLI profile)
+# AWS configuration (choose one option):
+# Option 1: Use AWS CLI profile (recommended)
+AWS_PROFILE=your_profile_name  # Defaults to 'default' if not set
+
+# Option 2: Direct credentials (if not using AWS CLI profile)
 AWS_ACCESS_KEY_ID=your_aws_access_key
 AWS_SECRET_ACCESS_KEY=your_aws_secret_key
 AWS_REGION=your_preferred_region
 ```
 
-The environment variables are loaded using python-dotenv in both the CDK stack and Lambda function. If you're using the AWS CLI with a configured profile, you don't need to set the AWS credentials in the `.env` file.
+The environment variables are loaded using python-dotenv in both the CDK stack and Lambda function. The Discord webhook URL is automatically stored in AWS Parameter Store during deployment, and the Lambda function is granted permission to access it.
+
+Note: You don't need to set `DISCORD_WEBHOOK_URL_ARN` - this is automatically handled by the CDK stack.
 
 4. Deploy with CDK:
 ```bash
