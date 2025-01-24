@@ -1,14 +1,14 @@
 from aws_cdk import (
+    Duration,
     Stack,
     aws_ssm as ssm,
     aws_lambda as _lambda,
     aws_dynamodb as _dynamodb,
     aws_events as events,
     aws_events_targets as targets,
-    Duration,
+    aws_ecr_assets,
 )
 from constructs import Construct
-from aws_cdk.aws_ecr_assets import DockerImageAsset
 import os
 from dotenv import load_dotenv
 
@@ -30,7 +30,7 @@ class PcPartsScraperStack(Stack):
             tier=ssm.ParameterTier.STANDARD
         )
         # Create an ECR repo for docker image
-        stock_notifier_docker_image = DockerImageAsset(
+        stock_notifier_docker_image = aws_ecr_assets.DockerImageAsset(
             self,
             "StockNotifierDockerImage",
             directory="./lambda",
