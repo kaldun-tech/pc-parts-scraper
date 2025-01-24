@@ -24,12 +24,23 @@ python -m venv .venv
 .venv\Scripts\activate
 pip install -r requirements.txt
 pip install -r requirements-dev.txt
+pip install -r lambda\requirements.txt
+playwright install  # Install browser binaries for web scraping
 ```
 
 3. Configure environment variables:
-- Create a `.env` file with required credentials
-- Set up Discord webhook URL
-- Configure AWS credentials
+- Create a `.env` file in the root directory with the following variables:
+```bash
+# Discord webhook URL for notifications
+DISCORD_WEBHOOK_URL=your_discord_webhook_url
+
+# AWS credentials (if not using AWS CLI profile)
+AWS_ACCESS_KEY_ID=your_aws_access_key
+AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+AWS_REGION=your_preferred_region
+```
+
+The environment variables are loaded using python-dotenv in both the CDK stack and Lambda function. If you're using the AWS CLI with a configured profile, you don't need to set the AWS credentials in the `.env` file.
 
 4. Deploy with CDK:
 ```bash

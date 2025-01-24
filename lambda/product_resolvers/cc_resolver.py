@@ -10,6 +10,12 @@ class CanadaComputersResolver:
         self.product_title = product_title
 
     def resolve(self) -> Product:
+        """
+        Resolve product information from Canada Computers.
+        
+        Returns:
+            Product object with price and availability information
+        """
         with sync_playwright() as p:
             # Handle exception case if product
             try:

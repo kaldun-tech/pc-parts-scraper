@@ -6,7 +6,7 @@ A serverless price tracking solution that monitors PC component prices from vari
 ## Core Features
 - Automated price tracking using AWS Lambda
 - Discord notifications for price changes and availability
-- Multi-retailer support (currently Canada Computers)
+- Multi-retailer support: Newegg and Amazon
 - DynamoDB-based data persistence
 
 ## Technology Stack
@@ -31,6 +31,6 @@ A serverless price tracking solution that monitors PC component prices from vari
 
 ## Current Implementation
 - Tracks specific PC components (e.g., RAM modules)
-- Supports Canada Computers as initial retailer
+- Supports Newegg and Amazon as initial retailers
 - Uses Discord webhooks for notifications
 - Leverages DynamoDB for price history
