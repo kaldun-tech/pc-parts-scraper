@@ -1,4 +1,6 @@
-from enum import Enum
+from enum import Enum, auto
 
-class Store(Enum):
-    CANADA_COMPUTERS = "Canada Computers"
+class Store(str, Enum):
+    """Enum for supported stores."""
+    AMAZON = "AMAZON"
+    NEWEGG = "NEWEGG"

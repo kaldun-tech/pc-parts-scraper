@@ -1,58 +1,60 @@
+# PC Parts Price Tracker
 
-# Welcome to your CDK Python project!
+A serverless application that tracks PC component prices from various retailers and sends notifications through Discord when prices change or items become available.
 
-This is a blank project for CDK development with Python.
+## Features
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
+- 🤖 Automated price tracking using AWS Lambda
+- 📊 Price history storage in DynamoDB
+- 🔔 Real-time Discord notifications
+- ⚡ Serverless architecture for scalability
+- 🛍️ Multi-retailer support (currently Canada Computers)
 
-This project is set up like a standard Python project.  The initialization
-process also creates a virtualenv within this project, stored under the `.venv`
-directory.  To create the virtualenv it assumes that there is a `python3`
-(or `python` for Windows) executable in your path with access to the `venv`
-package. If for any reason the automatic creation of the virtualenv fails,
-you can create the virtualenv manually.
+## Setup
 
-To manually create a virtualenv on MacOS and Linux:
-
-```
-$ python -m venv .venv
-```
-
-After the init process completes and the virtualenv is created, you can use the following
-step to activate your virtualenv.
-
-```
-$ source .venv/bin/activate
+1. Clone the repository:
+```bash
+git clone https://github.com/kaldun-tech/pc-parts-scraper.git
+cd pc-parts-scraper
 ```
 
-If you are a Windows platform, you would activate the virtualenv like this:
-
-```
-% .venv\Scripts\activate.bat
-```
-
-Once the virtualenv is activated, you can install the required dependencies.
-
-```
-$ pip install -r requirements.txt
+2. Install dependencies:
+```bash
+python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt
+pip install -r requirements-dev.txt
 ```
 
-At this point you can now synthesize the CloudFormation template for this code.
+3. Configure environment variables:
+- Create a `.env` file with required credentials
+- Set up Discord webhook URL
+- Configure AWS credentials
 
+4. Deploy with CDK:
+```bash
+cdk deploy
 ```
-$ cdk synth
-```
 
-To add additional dependencies, for example other CDK libraries, just add
-them to your `setup.py` file and rerun the `pip install -r requirements.txt`
-command.
+## Development
 
-## Useful commands
+- Python code is formatted using Black
+- All new code must include type hints
+- Tests are located in the `tests` directory
+- Lambda function code is in the `lambda` directory
+- CDK infrastructure code is in `pc_parts_scraper`
 
- * `cdk ls`          list all stacks in the app
- * `cdk synth`       emits the synthesized CloudFormation template
- * `cdk deploy`      deploy this stack to your default AWS account/region
- * `cdk diff`        compare deployed stack with current state
- * `cdk docs`        open CDK documentation
+## Documentation
 
-Enjoy!
+Additional documentation can be found in the `.notes` directory:
+- [Project Overview](.notes/project_overview.md)
+- [Task List](.notes/task_list.md)
+- [Directory Structure](.notes/directory_structure.md)
+
+## Contributing
+
+Contributions are welcome! Please ensure you:
+1. Include type hints in Python code
+2. Format code with Black
+3. Update documentation as needed
+4. Add tests for new features
