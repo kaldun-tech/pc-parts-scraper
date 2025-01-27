@@ -1,7 +1,7 @@
 # Define function directory
 ARG FUNCTION_DIR="/function"
 
-FROM mcr.microsoft.com/playwright/python:v1.21.0-focal as build-image
+FROM mcr.microsoft.com/playwright/python:v1.48.0-focal as build-image
 
 # Install aws-lambda-cpp build dependencies
 RUN apt-get update && \
@@ -10,7 +10,8 @@ RUN apt-get update && \
     make \
     cmake \
     unzip \
-    libcurl4-openssl-dev
+    libcurl4-openssl-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR
@@ -19,19 +20,15 @@ ARG FUNCTION_DIR
 RUN mkdir -p ${FUNCTION_DIR}
 
 # Copy function code
-# COPY ./* ${FUNCTION_DIR}
- COPY . ${FUNCTION_DIR}
+COPY . ${FUNCTION_DIR}
 
-# Install the runtime interface client
-RUN pip3 install  \
-    --target ${FUNCTION_DIR} \
-    awslambdaric
-
-
-RUN pip3 install -r ./${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
+# Upgrade pip and install dependencies
+RUN pip3 install --upgrade pip && \
+    pip3 install --target ${FUNCTION_DIR} awslambdaric && \
+    pip3 install -r ${FUNCTION_DIR}/requirements.txt --target ${FUNCTION_DIR}
 
 # Multi-stage build: grab a fresh copy of the base image
-FROM mcr.microsoft.com/playwright/python:v1.21.0-focal
+FROM mcr.microsoft.com/playwright/python:v1.48.0-focal
 
 # Include global arg in this stage of the build
 ARG FUNCTION_DIR
@@ -41,5 +38,5 @@ WORKDIR ${FUNCTION_DIR}
 # Copy in the build image dependencies
 COPY --from=build-image ${FUNCTION_DIR} ${FUNCTION_DIR}
 
-ENTRYPOINT [ "/usr/bin/python", "-m", "awslambdaric" ]
-CMD [ "handler.handle" ]
+# Set the CMD to your handler
+CMD [ "/usr/bin/python3", "-m", "awslambdaric", "handler.handle" ]

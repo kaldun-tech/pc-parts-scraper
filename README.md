@@ -12,13 +12,20 @@ A serverless application that tracks PC component prices from various retailers 
 
 ## Setup
 
-1. Clone the repository:
+1. Install prerequisites:
+```bash
+# Install Node.js and npm if you haven't already
+# Then install AWS CDK CLI globally
+npm install -g aws-cdk
+```
+
+2. Clone the repository:
 ```bash
 git clone https://github.com/kaldun-tech/pc-parts-scraper.git
 cd pc-parts-scraper
 ```
 
-2. Install dependencies:
+3. Install dependencies:
 ```bash
 python -m venv .venv
 .venv\Scripts\activate
@@ -28,27 +35,27 @@ pip install -r lambda\requirements.txt
 playwright install  # Install browser binaries for web scraping
 ```
 
-3. Configure environment variables:
+4. Configure environment variables:
 - Create a `.env` file in the root directory with the following variables:
 ```bash
 # Discord webhook URL for notifications
 DISCORD_WEBHOOK_URL=your_discord_webhook_url
 
-# AWS configuration (choose one option):
+# AWS configuration
 # Option 1: Use AWS CLI profile (recommended)
-AWS_PROFILE=your_profile_name  # Defaults to 'default' if not set
+AWS_PROFILE=your_profile_name  # Or use --profile with cdk commands
 
-# Option 2: Direct credentials (if not using AWS CLI profile)
-AWS_ACCESS_KEY_ID=your_aws_access_key
-AWS_SECRET_ACCESS_KEY=your_aws_secret_key
-AWS_REGION=your_preferred_region
+# Option 2: Direct credentials (not recommended, use AWS profiles instead)
+# AWS_ACCESS_KEY_ID=your_aws_access_key
+# AWS_SECRET_ACCESS_KEY=your_aws_secret_key
+# AWS_REGION=your_preferred_region
 ```
 
 The environment variables are loaded using python-dotenv in both the CDK stack and Lambda function. The Discord webhook URL is automatically stored in AWS Parameter Store during deployment, and the Lambda function is granted permission to access it.
 
 Note: You don't need to set `DISCORD_WEBHOOK_URL_ARN` - this is automatically handled by the CDK stack.
 
-4. Deploy with CDK:
+5. Deploy with CDK:
 ```bash
 cdk deploy
 ```
