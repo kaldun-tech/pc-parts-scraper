@@ -53,6 +53,17 @@ Note: You don't need to set `DISCORD_WEBHOOK_URL_ARN` - this is automatically ha
 cdk deploy
 ```
 
+## Running Tests
+
+Run tests using pytest:
+```bash
+python -m pytest tests/                    # Run all tests
+python -m pytest tests/unit/test_handler.py  # Run specific test
+python -m pytest -v tests/                 # Verbose output
+```
+
+Note: Tests use mocked AWS and Discord dependencies.
+
 ## Development
 
 - Python code is formatted using Black
