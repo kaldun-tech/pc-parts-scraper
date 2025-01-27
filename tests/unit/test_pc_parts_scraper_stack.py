@@ -8,4 +8,4 @@ from pc_parts_scraper.pc_parts_scraper_stack import PcPartsScraperStack
 def test_sqs_queue_created():
     app = core.App()
     stack = PcPartsScraperStack(app, "pc-parts-scraper")
-    template = assertions.Template.from_stack(stack)
+    assertions.Template.from_stack(stack)
