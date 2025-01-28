@@ -2,7 +2,7 @@ import sys
 import os
 from decimal import Decimal
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 
 # Add project root and lambda to Python path
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))

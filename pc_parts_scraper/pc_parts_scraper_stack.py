@@ -7,6 +7,7 @@ from aws_cdk import (
     aws_events as events,
     aws_events_targets as targets,
     aws_ecr_assets,
+    aws_iam as iam,
 )
 from constructs import Construct
 import os
@@ -43,10 +44,32 @@ class PcPartsScraperStack(Stack):
             function_name="StockNotifierLambda",
             memory_size=2048,
             timeout=Duration.seconds(600),
-            environment={ "DISCORD_WEBHOOK_URL_ARN": string_param.parameter_arn},
+            environment={
+                "DISCORD_WEBHOOK_URL": discord_webhook_url,  # Pass URL directly
+                "DISCORD_WEBHOOK_URL_ARN": string_param.parameter_arn,  # Keep ARN for reference
+            },
             code=_lambda.DockerImageCode.from_ecr(
                 repository=stock_notifier_docker_image.repository,
                 tag_or_digest=stock_notifier_docker_image.image_tag,
+            )
+        )
+        # Grant SSM permissions
+        string_param.grant_read(stock_notifier_lambda)
+
+        # Grant additional permissions if needed
+        stock_notifier_lambda.add_to_role_policy(
+            iam.PolicyStatement(
+                effect=iam.Effect.ALLOW,
+                actions=[
+                    "ssm:GetParameter",
+                    "dynamodb:PutItem",
+                    "dynamodb:GetItem",
+                    "dynamodb:Query"
+                ],
+                resources=[
+                    string_param.parameter_arn,
+                    # Add other resource ARNs as needed
+                ]
             )
         )
         # Stock DynamoDB table
@@ -79,8 +102,6 @@ class PcPartsScraperStack(Stack):
         # Connects Lambda to CloudWatch event
         stock_notifier_function = targets.LambdaFunction(stock_notifier_lambda)
         one_minute_event_rule.add_target(stock_notifier_function)
-        # Give Lambda the permissions to read off Parameter Store
-        string_param.grant_read(stock_notifier_lambda)
         # Give Lambda the permissions to read and write to DynamoDB
         stock_dynamo_table.grant_read_write_data(stock_notifier_lambda)
         # Give Lambda the permissions to pull images from ECR

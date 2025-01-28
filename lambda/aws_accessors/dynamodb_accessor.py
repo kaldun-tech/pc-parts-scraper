@@ -1,5 +1,3 @@
-import boto3
-from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 from models.product import Product
 from typing import Optional

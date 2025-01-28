@@ -1,5 +1,4 @@
 from typing import Optional
-from unicodedata import name
 from playwright.sync_api import sync_playwright, TimeoutError, Page, Browser, Locator, Error
 from models.store import Store
 from models.product import Product

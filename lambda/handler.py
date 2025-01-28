@@ -1,16 +1,11 @@
 import os
 
-from dotenv import load_dotenv
-
 from aws_accessors import dynamodb_accessor, ssm_accessor
 from discord.discord_publisher import publish as discord_publish
 from models.product import Product
 from models.store import Store
 from product_resolvers.amazon_resolver import AmazonResolver
 from product_resolvers.newegg_resolver import NeweggResolver
-
-# Load environment variables from .env file
-load_dotenv()
 
 # Product configuration
 PRODUCT_ID = "NVIDIA-RTX-3090TI-FE"
