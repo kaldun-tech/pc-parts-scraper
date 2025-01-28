@@ -3,12 +3,8 @@ from botocore.exceptions import ClientError
 import os
 from .aws_session import AWSSession, handle_aws_error
 
-# Get profile from environment variable or use default
-aws_profile = os.getenv('AWS_PROFILE', 'default')
-print(f"Using AWS profile: {aws_profile}")
-
-# Create a session using your profile
-session = boto3.Session(profile_name=aws_profile)
+# Create a session using Lambda's IAM role credentials
+session = boto3.Session()
 
 ssm_client = AWSSession.get_client('ssm')
 
