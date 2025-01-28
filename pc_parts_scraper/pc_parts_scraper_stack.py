@@ -22,12 +22,23 @@ class PcPartsScraperStack(Stack):
 
         # ParameterStore details for Discord webhook URL
         discord_webhook_url = os.getenv('DISCORD_WEBHOOK_URL')
-        string_param = ssm.StringParameter(
+        webhook_param = ssm.StringParameter(
             self,
             "DiscordWebhookUrl",
             parameter_name="DISCORD_WEBHOOK_URL",
             string_value=discord_webhook_url,
             description="Discord Webhook URL String",
+            tier=ssm.ParameterTier.STANDARD
+        )
+
+        # ParameterStore details for AWS Profile
+        aws_profile = os.getenv('AWS_PROFILE', 'default')
+        profile_param = ssm.StringParameter(
+            self,
+            "AWSProfile",
+            parameter_name="AWS_PROFILE",
+            string_value=aws_profile,
+            description="AWS Profile for Lambda Function",
             tier=ssm.ParameterTier.STANDARD
         )
         # Create an ECR repo for docker image
@@ -46,7 +57,9 @@ class PcPartsScraperStack(Stack):
             timeout=Duration.seconds(600),
             environment={
                 "DISCORD_WEBHOOK_URL": discord_webhook_url,  # Pass URL directly
-                "DISCORD_WEBHOOK_URL_ARN": string_param.parameter_arn,  # Keep ARN for reference
+                "DISCORD_WEBHOOK_URL_ARN": webhook_param.parameter_arn,  # Keep ARN for reference
+                "AWS_PROFILE": aws_profile,  # Pass profile directly
+                "AWS_PROFILE_ARN": profile_param.parameter_arn,  # Keep ARN for reference
             },
             code=_lambda.DockerImageCode.from_ecr(
                 repository=stock_notifier_docker_image.repository,
@@ -54,7 +67,8 @@ class PcPartsScraperStack(Stack):
             )
         )
         # Grant SSM permissions
-        string_param.grant_read(stock_notifier_lambda)
+        webhook_param.grant_read(stock_notifier_lambda)
+        profile_param.grant_read(stock_notifier_lambda)
 
         # Grant additional permissions if needed
         stock_notifier_lambda.add_to_role_policy(
@@ -67,7 +81,8 @@ class PcPartsScraperStack(Stack):
                     "dynamodb:Query"
                 ],
                 resources=[
-                    string_param.parameter_arn,
+                    webhook_param.parameter_arn,
+                    profile_param.parameter_arn,
                     # Add other resource ARNs as needed
                 ]
             )
