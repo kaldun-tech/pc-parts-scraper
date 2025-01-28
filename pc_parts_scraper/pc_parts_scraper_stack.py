@@ -31,16 +31,6 @@ class PcPartsScraperStack(Stack):
             tier=ssm.ParameterTier.STANDARD
         )
 
-        # ParameterStore details for AWS Profile
-        aws_profile = os.getenv('AWS_PROFILE', 'default')
-        profile_param = ssm.StringParameter(
-            self,
-            "AWSProfile",
-            parameter_name="AWS_PROFILE",
-            string_value=aws_profile,
-            description="AWS Profile for Lambda Function",
-            tier=ssm.ParameterTier.STANDARD
-        )
         # Create an ECR repo for docker image
         stock_notifier_docker_image = aws_ecr_assets.DockerImageAsset(
             self,
@@ -58,8 +48,6 @@ class PcPartsScraperStack(Stack):
             environment={
                 "DISCORD_WEBHOOK_URL": discord_webhook_url,  # Pass URL directly
                 "DISCORD_WEBHOOK_URL_ARN": webhook_param.parameter_arn,  # Keep ARN for reference
-                "AWS_PROFILE": aws_profile,  # Pass profile directly
-                "AWS_PROFILE_ARN": profile_param.parameter_arn,  # Keep ARN for reference
             },
             code=_lambda.DockerImageCode.from_ecr(
                 repository=stock_notifier_docker_image.repository,
@@ -68,22 +56,22 @@ class PcPartsScraperStack(Stack):
         )
         # Grant SSM permissions
         webhook_param.grant_read(stock_notifier_lambda)
-        profile_param.grant_read(stock_notifier_lambda)
 
         # Grant additional permissions if needed
         stock_notifier_lambda.add_to_role_policy(
             iam.PolicyStatement(
                 effect=iam.Effect.ALLOW,
                 actions=[
-                    "ssm:GetParameter",
                     "dynamodb:PutItem",
                     "dynamodb:GetItem",
-                    "dynamodb:Query"
+                    "dynamodb:Query",
+                    "ssm:GetParameter",
+                    "ssm:GetParameters",
                 ],
                 resources=[
                     webhook_param.parameter_arn,
-                    profile_param.parameter_arn,
-                    # Add other resource ARNs as needed
+                    f"arn:aws:dynamodb:{self.region}:{self.account}:table/StockTable",
+                    f"arn:aws:ssm:{self.region}:{self.account}:parameter/*"
                 ]
             )
         )

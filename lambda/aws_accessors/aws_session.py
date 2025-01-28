@@ -10,21 +10,7 @@ class AWSSession:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(AWSSession, cls).__new__(cls)
-            
-            # Initialize a session without a profile to access SSM
-            temp_session = boto3.Session()
-            ssm_client = temp_session.client('ssm')
-            
-            try:
-                # Try to get AWS profile from Parameter Store
-                response = ssm_client.get_parameter(Name='AWS_PROFILE')
-                aws_profile = response['Parameter']['Value']
-            except ClientError:
-                # Fall back to environment variable or default if parameter doesn't exist
-                aws_profile = os.getenv('AWS_PROFILE', 'default')
-            
-            # Create the main session with the retrieved profile
-            cls._session = boto3.Session(profile_name=aws_profile)
+            cls._session = boto3.Session()
         return cls._instance
 
     @classmethod
