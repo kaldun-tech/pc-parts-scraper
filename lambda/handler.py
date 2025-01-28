@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 from aws_accessors import dynamodb_accessor, ssm_accessor
 from discord.discord_publisher import publish as discord_publish
@@ -13,7 +14,7 @@ PRODUCT_TITLE = "NVIDIA GeForce RTX 3090 TI Founders Edition"
 AMAZON_URL = "https://www.amazon.com/Nvidia-RTX-3090-TI-Founders/dp/B09X4JVZB5"
 NEWEGG_URL = "https://www.newegg.com/p/1FT-0004-007S1"
 
-def find_product_availability() -> list[Product]:
+def find_product_availability() -> List[Product]:
     """
     Finds the availability of a product across multiple retailers.
     Returns a list of Product objects, one for each retailer.
@@ -38,7 +39,7 @@ def find_product_availability() -> list[Product]:
 
     return products
 
-def publish_to_discord(products: list[Product]) -> None:
+def publish_to_discord(products: List[Product]) -> None:
     """
     Publishes product information to Discord.
     """
